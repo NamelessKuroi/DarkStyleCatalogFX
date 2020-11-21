@@ -163,7 +163,6 @@ public class DarkStyleCatalogSQL {
 
     public static boolean ImagenIsUsedByMaterial(String photo) {
 
-       
         String query = "SELECT * FROM Materials WHERE PhotoAddress = \"" + photo + "\";";
         Connection connection = null;
         ResultSet resultSet = null;
@@ -333,7 +332,7 @@ public class DarkStyleCatalogSQL {
 ////////////////////////////////////////////////////////////////////
 //                          Material                             //
 ///////////////////////////////////////////////////////////////////
-    public static int getNextIdMaterial() {
+    public static int getLastIdMaterial() {
 
         String query = " SELECT max(IdMaterial) FROM Materials ";
 
@@ -347,7 +346,7 @@ public class DarkStyleCatalogSQL {
             resultSet = statement
                     .executeQuery(query);
             while (resultSet.next()) {
-                return resultSet.getInt(1) + 1;
+                return resultSet.getInt(1);
             }
 
         } catch (ClassNotFoundException | SQLException e) {
@@ -648,7 +647,7 @@ public class DarkStyleCatalogSQL {
             preparedStatement.setDouble(7, newAnime.getRating());
 
             preparedStatement.executeUpdate();
-
+       
         } catch (ClassNotFoundException | SQLException e) {
             System.out.println(e);
             System.out.println(e);

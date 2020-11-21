@@ -56,12 +56,29 @@ and open the template in the editor.
 /*                         Tool Tip                      */
 /*///////////////////////////////////////////////////////*/
 
-.tooltip {
+/*.tooltip {
     -fx-text-fill: wheat;
     -fx-text-alignment: center;
     -fx-font-family:'Century Gothic';
     -fx-font-weight:normal;
     -fx-font-size: 13px;
+}*/
+
+.tooltip {
+    -fx-text-fill: -base-color;
+    -fx-text-alignment: center;
+    -fx-font-family:'Century Gothic';
+    -fx-font-weight:bold;
+    -fx-font-size: 13px;
+    
+    -fx-border-color:-base-color;
+    -fx-background-radius: 10px;
+    -fx-border-radius: 10px;
+
+    -fx-background-color:
+        linear-gradient(#38424b55 0%, #1f242955 20%, #191d2255 100%),
+        linear-gradient(#20262b55, #191d2255),
+        radial-gradient(center 50% 0%, radius 100%, rgba(114,131,148,0.5), rgba(255,255,255,0));
 }
 
 /*///////////////////////////////////////////////////////*/
@@ -333,9 +350,9 @@ and open the template in the editor.
 
 .mode-card.grid-view
 {
-    -fx-horizontal-cell-spacing : 30;
+    -fx-horizontal-cell-spacing : 25;
     -fx-vertical-cell-spacing: 40;
-    -fx-cell-width: 202; /*200 + 2*/
+    -fx-cell-width: 210; /*200 + 2*/
     -fx-cell-height: 320; /*250 + 70*/
 
 }
@@ -345,7 +362,7 @@ and open the template in the editor.
     -fx-font-family: 'Century Gothic';
     -fx-font-size:13;
 
-    -fx-background-radius: 0 0 0 50px;
+    -fx-background-radius: 25px 25px 25px 50px;
     -fx-background-color:
         linear-gradient(#38424b 0%, #1f2429 20%, #191d22 100%),
         linear-gradient(#20262b, #191d22),
@@ -357,7 +374,7 @@ and open the template in the editor.
 .mode-card.grid-cell:hover
 {
     -fx-border-color: -base-color-opacity;
-    -fx-border-radius: 0 0 0 50px;
+    -fx-border-radius: 25px 25px 25px 50px;
     -fx-font-weight:bold;
 
 }
@@ -731,7 +748,7 @@ and open the template in the editor.
     -fx-font-family:'Century Gothic';
     -fx-text-fill:-text-color; 
     -fx-padding: 5px;
-    -fx-effect:  dropshadow(three-pass-box, black, 2, 0.65, 1, 1);
+    -fx-effect:  dropshadow(three-pass-box, black, 2, 0.65,2,2);
 }
 
 .etiquette-diagonal.label{
@@ -893,8 +910,15 @@ and open the template in the editor.
 /*                         Label                         */
 /*///////////////////////////////////////////////////////*/
 
-
-
+/*///////////////////////////////////////////////////////*/
+/*                        Pop Over                     */
+/*///////////////////////////////////////////////////////*/
+.popover{
+     -fx-background-color: transparent;   
+}
+/*///////////////////////////////////////////////////////*/
+/*                         Pop Over                     */
+/*///////////////////////////////////////////////////////*/
 
 /*///////////////////////////////////////////////////////*/
 /*                         List View                     */

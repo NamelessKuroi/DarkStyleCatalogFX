@@ -23,4 +23,8 @@
 hs_err_pid*
 
 #local storage
-Storage/
+Storage/Photos/
+Storage/Splash/
+Storage/BackUp/
+dist/
+

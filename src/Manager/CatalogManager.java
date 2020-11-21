@@ -88,13 +88,16 @@ public class CatalogManager {
 
     public static final FilteredList<Material> searchedMaterial() {
         ObservableList<Material> searched = FXCollections.observableArrayList();
-      
+
         searched.addAll(ANIMES);
         searched.addAll(DONGHUAS);
         searched.addAll(LIGHTNOVELS);
         return new FilteredList<>(searched);
     }
 
+    ////////////////////////////////////////////////////////////////////
+    //                      ORDENBYTITLE                              //
+    ///////////////////////////////////////////////////////////////////
     public static void animeOrdenByTitle() {
         FXCollections.sort(ANIMES, (firstItem, secondItem) -> {
             return firstItem.getTitle().compareToIgnoreCase(secondItem.getTitle());
@@ -113,30 +116,39 @@ public class CatalogManager {
         });
     }
 
+    ////////////////////////////////////////////////////////////////////
+    //                      ADD MATERIAL                             //
+    ///////////////////////////////////////////////////////////////////
     public static void addAnime(Anime newAnime) {
         DarkStyleCatalogSQL.addAnime(newAnime);
+        newAnime.setIdMaterial(DarkStyleCatalogSQL.getLastIdMaterial());
         ANIMES.add(newAnime);
-        updateExtras(newAnime);
-        animeOrdenByTitle();
-
-    }
-
-    public static void editAnime(Anime editedAnime) {
-        DarkStyleCatalogSQL.editAnime(editedAnime);
-        updateExtras(editedAnime);
-        animeOrdenByTitle();
-
-    }
-
-    public static void removeAnime(Anime removedAnime) {
-        ANIMES.remove(removedAnime);
         animeOrdenByTitle();
     }
 
     public static void addDonghua(Donghua newDonghua) {
+        DarkStyleCatalogSQL.addDonghua(newDonghua);
+        newDonghua.setIdMaterial(DarkStyleCatalogSQL.getLastIdMaterial());
         DONGHUAS.add(newDonghua);
-        updateExtras(newDonghua);
         donghuaOrdenByTitle();
+
+    }
+
+    public static void addLightNovel(LightNovel newLightNovel) {
+        DarkStyleCatalogSQL.addLightNovel(newLightNovel);
+        newLightNovel.setIdMaterial(DarkStyleCatalogSQL.getLastIdMaterial());
+        LIGHTNOVELS.add(newLightNovel);
+        lightNovelOrdenByTitle();
+
+    }
+
+    ////////////////////////////////////////////////////////////////////
+    //                     EDIT  MATERIAL                            //
+    ///////////////////////////////////////////////////////////////////
+    public static void editAnime(Anime editedAnime) {
+        DarkStyleCatalogSQL.editAnime(editedAnime);
+        updateExtras(editedAnime);
+        animeOrdenByTitle();
 
     }
 
@@ -146,18 +158,6 @@ public class CatalogManager {
         donghuaOrdenByTitle();
     }
 
-    public static void removeDonghua(Donghua removedDonghua) {
-        DONGHUAS.add(removedDonghua);
-        donghuaOrdenByTitle();
-    }
-
-    public static void addLightNovel(LightNovel newLightNovel) {
-        LIGHTNOVELS.add(newLightNovel);
-        updateExtras(newLightNovel);
-        lightNovelOrdenByTitle();
-
-    }
-
     public static void editLightNovel(LightNovel editedLightNovel) {
         DarkStyleCatalogSQL.editLightNovel(editedLightNovel);
         updateExtras(editedLightNovel);
@@ -165,8 +165,21 @@ public class CatalogManager {
 
     }
 
+    ////////////////////////////////////////////////////////////////////
+    //                     REMOVE  MATERIAL                            //
+    ///////////////////////////////////////////////////////////////////
+    public static void removeAnime(Anime removedAnime) {
+        ANIMES.remove(removedAnime);
+        animeOrdenByTitle();
+    }
+
+    public static void removeDonghua(Donghua removedDonghua) {
+        DONGHUAS.remove(removedDonghua);
+        donghuaOrdenByTitle();
+    }
+
     public static void removeLightNovel(LightNovel removedLightNovel) {
-        LIGHTNOVELS.add(removedLightNovel);
+        LIGHTNOVELS.remove(removedLightNovel);
         lightNovelOrdenByTitle();
     }
 
@@ -178,6 +191,9 @@ public class CatalogManager {
     public static final ObservableList<State> STATES = DarkStyleCatalogSQL.getAllState();
     public static final ObservableList<Studio> STUDIOS = DarkStyleCatalogSQL.getAllStudio();
 
+////////////////////////////////////////////////////////////////////
+    //                      ORDENBYNAME                             //
+    ///////////////////////////////////////////////////////////////////
     public static void authorOrdenByName() {
         FXCollections.sort(AUTHORS, (firstItem, secondItem) -> {
             return firstItem.getName().compareToIgnoreCase(secondItem.getName());
@@ -202,24 +218,13 @@ public class CatalogManager {
         });
     }
 
+    ////////////////////////////////////////////////////////////////////
+    //                      ADD EXTRAS                             //
+    ///////////////////////////////////////////////////////////////////
     public static void addAuthor(Author newAuthor) {
         DarkStyleCatalogSQL.addAuthor(newAuthor);
         AUTHORS.add(newAuthor);
         authorOrdenByName();
-    }
-
-    public static void editAuthor(Author editedAuthor) {
-        DarkStyleCatalogSQL.editAuthor(editedAuthor);
-        updateMaterial(UPDATE_AUTHOR);
-        authorOrdenByName();
-
-    }
-
-    public static void removeAuthor(Author removedAuthor) {
-        AUTHORS.remove(removedAuthor);
-        updateMaterial(UPDATE_AUTHOR);
-        authorOrdenByName();
-
     }
 
     public static void addKind(Kind newKind) {
@@ -228,10 +233,56 @@ public class CatalogManager {
         kindOrdenByName();
     }
 
+    public static void addState(State newState) {
+        DarkStyleCatalogSQL.addState(newState);
+        STATES.add(newState);
+        stateOrdenByName();
+    }
+
+    public static void addStudio(Studio newStudio) {
+        DarkStyleCatalogSQL.addStudio(newStudio);
+        STUDIOS.add(newStudio);
+        studioOrdenByName();
+    }
+
+    ////////////////////////////////////////////////////////////////////
+    //                      EDIT EXTRAS                             //
+    ///////////////////////////////////////////////////////////////////
+    public static void editAuthor(Author editedAuthor) {
+        DarkStyleCatalogSQL.editAuthor(editedAuthor);
+        updateMaterial(UPDATE_AUTHOR);
+        authorOrdenByName();
+
+    }
+
     public static void editKind(Kind editedKind) {
         DarkStyleCatalogSQL.editKind(editedKind);
         updateMaterial(UPDATE_KIND);
         kindOrdenByName();
+
+    }
+
+    public static void editState(State editedState) {
+        DarkStyleCatalogSQL.editState(editedState);
+        updateMaterial(UPDATE_STATE);
+        stateOrdenByName();
+
+    }
+
+    public static void editStudio(Studio editedStudio) {
+        DarkStyleCatalogSQL.editStudio(editedStudio);
+        updateMaterial(UPDATE_STUDIO);
+        studioOrdenByName();
+
+    }
+
+    ////////////////////////////////////////////////////////////////////
+    //                      REMOVE EXTRAS                             //
+    ///////////////////////////////////////////////////////////////////
+    public static void removeAuthor(Author removedAuthor) {
+        AUTHORS.remove(removedAuthor);
+        updateMaterial(UPDATE_AUTHOR);
+        authorOrdenByName();
 
     }
 
@@ -242,36 +293,10 @@ public class CatalogManager {
 
     }
 
-    public static void addState(State newState) {
-        DarkStyleCatalogSQL.addState(newState);
-        STATES.add(newState);
-        stateOrdenByName();
-    }
-
-    public static void editState(State editedState) {
-        DarkStyleCatalogSQL.editState(editedState);
-        updateMaterial(UPDATE_STATE);
-        stateOrdenByName();
-
-    }
-
     public static void removeState(State removedState) {
         STATES.remove(removedState);
         updateMaterial(UPDATE_STATE);
         stateOrdenByName();
-
-    }
-
-    public static void addStudio(Studio newStudio) {
-        DarkStyleCatalogSQL.addStudio(newStudio);
-        STUDIOS.add(newStudio);
-        studioOrdenByName();
-    }
-
-    public static void editStudio(Studio editedStudio) {
-        DarkStyleCatalogSQL.editStudio(editedStudio);
-        updateMaterial(UPDATE_STUDIO);
-        studioOrdenByName();
 
     }
 

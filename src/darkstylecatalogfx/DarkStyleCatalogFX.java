@@ -130,6 +130,7 @@ import javafx.geometry.Side;
 import javafx.scene.control.ComboBox;
 import javafx.scene.input.Dragboard;
 import javafx.scene.input.TransferMode;
+import javafx.scene.shape.Rectangle;
 
 import javafx.util.Duration;
 import javafx.util.StringConverter;
@@ -324,6 +325,7 @@ public final class DarkStyleCatalogFX extends Application {
 
     private TextArea synopsisForFormOfMaterial = null;
     private ImageView photoForFormOfMaterial = null;
+    private Label highlight_photo = new Label();
     private StarRating starRatingForFormOfMaterial = null;
     private Counter counterForFormOfMaterial = null;
 
@@ -376,7 +378,7 @@ public final class DarkStyleCatalogFX extends Application {
         lockApplication = new SimpleBooleanProperty(false);
 
         lockApplication.addListener((observable, oldValue, newValue) -> {
-          buttonOfLeftMenu.setDisable(newValue);
+            buttonOfLeftMenu.setDisable(newValue);
             if (newValue) {
                 MainMenu.setLeft(null);
                 if (unlockedRadialPane) {
@@ -431,7 +433,7 @@ public final class DarkStyleCatalogFX extends Application {
 
     public void initializeEmptyFields() {
         filterByEmptyFields = FXCollections.observableArrayList();
-        filterByEmptyFields.add(new EmptyField("Synposis"));
+        filterByEmptyFields.add(new EmptyField("Synopsis"));
         filterByEmptyFields.add(new EmptyField("Photo"));
         filterByEmptyFields.add(new EmptyField("Chapter"));
         filterByEmptyFields.add(new EmptyField("Year"));
@@ -1445,13 +1447,12 @@ public final class DarkStyleCatalogFX extends Application {
                     newAnime.setPhotoAddress(nameFile);
                     cleanPhoto(newAnime);
                     copyPhoto();
-                    int idAnime = DarkStyleCatalogSQL.getNextIdMaterial();
-
-                    doAssignsToMaterial(idAnime);
 
                     CatalogManager.addAnime(newAnime);
+                    doAssignsToMaterial(newAnime.getIdMaterial());
+                    CatalogManager.updateExtras(newAnime);
 
-                    paneByTypes.getSelectionModel().select(0);
+                    paneByTypes.getSelectionModel().select(Display.TAB_FOR_ANIME);
                     title.setPromptText("El Anime Ha Sido Agregado");
                     showDialogRefresh();
                 } else {
@@ -1484,6 +1485,7 @@ public final class DarkStyleCatalogFX extends Application {
         contentFormAnime.setActions(buttonActions);
 
         if (animeToEdit != null) {
+            System.out.println("Edit Anime:" + animeToEdit.getIdMaterial());
             title.setText(animeToEdit.getTitle());
             synopsisForFormOfMaterial.setText(animeToEdit.getSynopsis());
             counterForFormOfMaterial.setValue(animeToEdit.getChapter());
@@ -1587,15 +1589,14 @@ public final class DarkStyleCatalogFX extends Application {
                     newDonghua.setPhotoAddress(nameFile);
                     cleanPhoto(newDonghua);
                     copyPhoto();
-                    int idDonghua = DarkStyleCatalogSQL.getNextIdMaterial();
-
-                    doAssignsToMaterial(idDonghua);
 
                     CatalogManager.addDonghua(newDonghua);
+                    doAssignsToMaterial(newDonghua.getIdMaterial());
+                    CatalogManager.updateExtras(newDonghua);
 
                     suggestionsOfDonghuas.getSuggestions().setAll(DarkStyleCatalogSQL.getAllDonghua());
                     galleryOfDonghuaForTabOfDonghua.setItems(DarkStyleCatalogSQL.getAllDonghua());
-                    paneByTypes.getSelectionModel().select(1);
+                    paneByTypes.getSelectionModel().select(Display.TAB_FOR_DONGHUA);
                     title.setPromptText("El Donghua Ha Sido Agregado");
                     showDialogRefresh();
                 } else {
@@ -1729,15 +1730,14 @@ public final class DarkStyleCatalogFX extends Application {
                     newLightNovel.setCountry(countriesForFormOfMaterial.getValue() == null ? "" : countriesForFormOfMaterial.getValue());
                     cleanPhoto(newLightNovel);
                     copyPhoto();
-                    int idLightNovel = DarkStyleCatalogSQL.getNextIdMaterial();
-
-                    doAssignsToMaterial(idLightNovel);
 
                     CatalogManager.addLightNovel(newLightNovel);
+                    doAssignsToMaterial(newLightNovel.getIdMaterial());
+                    CatalogManager.updateExtras(newLightNovel);
 
                     suggestionsOfLightNovels.getSuggestions().setAll(DarkStyleCatalogSQL.getAllLightNovel());
                     galleryOfLightNovelForTabOfLightNovel.setItems(DarkStyleCatalogSQL.getAllLightNovel());
-                    paneByTypes.getSelectionModel().select(2);
+                    paneByTypes.getSelectionModel().select(Display.TAB_FOR_LIGHTNOVEL);
                     title.setPromptText("La Novela Ligera Ha Sido Agregado");
                     showDialogRefresh();
                 } else {
@@ -3224,13 +3224,14 @@ public final class DarkStyleCatalogFX extends Application {
         GridView<Material> view = cell.getGridView();
 
         Label title = new Label(item.getTitle());
-        title.setPadding(new Insets(20, 0, 0, 10));
 
         StarRating rating = new StarRating(5);
         rating.setMouseTransparent(UNTOUCHABLE);
         rating.setRating((int) item.getRating());
 
-        VBox contentOfCell = new VBox(createImageForMaterial(item, index, view.getWidth()), title, rating);
+        Label Highlight = new Label();
+        Highlight.setGraphic(createImageForMaterial(item, index, view.getWidth()));
+        VBox contentOfCell = new VBox(Highlight, title, rating);
 
         contentOfCell.setAlignment(Pos.TOP_CENTER);
 
@@ -3475,7 +3476,7 @@ public final class DarkStyleCatalogFX extends Application {
         editPhoto.setOnMouseClicked((event) -> {
             if (event.getButton() == MouseButton.PRIMARY && event.getClickCount() == 1) {
                 clearDymanicConent();
-                dymanicConent.getChildren().add(photoForFormOfMaterial);
+                dymanicConent.getChildren().add(highlight_photo);
                 AnimationFX animatioIn = new FadeIn(photoForFormOfMaterial);
                 animatioIn.play();
             }
@@ -3546,12 +3547,20 @@ public final class DarkStyleCatalogFX extends Application {
         pathOfPhotoFile = getAddressPhoto(DIR_PHOTOS + item.getPhotoAddress());
         localImage = new Image(pathOfPhotoFile, WIDTH_PHOTO, HEIGHT_PHOTO, PRESERVE_RATION, SMOOTH, BACKGROUND_LOADING);
 
+        Rectangle clip = new Rectangle(
+                photoMaterial.getFitWidth(), photoMaterial.getFitHeight()
+        );
+        clip.setArcWidth(50);
+        clip.setArcHeight(50);
+        photoMaterial.setClip(clip);
+
         photoMaterial.setImage(localImage);
         toProcessImagen(localImage, photoMaterial);
+
         if (index != -1 && widthGridView != 0.0) {
             photoMaterial.setOpacity(HIDDEN);
             AnimationFX animation = new FadeIn(photoMaterial);
-            animation.setSpeed(.75);
+            animation.setSpeed(2);
             animation.setDelay(Duration.millis(GridRowReady(widthGridView) + Display.AnimationDelayForCell(index, widthGridView)));
             animation.play();
         }
@@ -3560,12 +3569,22 @@ public final class DarkStyleCatalogFX extends Application {
     }
 
     public void createImageViewForMaterial() {
+        highlight_photo = new Label();
         photoForFormOfMaterial = new ImageView(NOT_PHOTO);
         photoForFormOfMaterial.setSmooth(true);
         photoForFormOfMaterial.setFitWidth(790);
         photoForFormOfMaterial.setFitHeight(400);
 
-        photoForFormOfMaterial.setOnMouseClicked((e) -> {
+        highlight_photo.setGraphic(photoForFormOfMaterial);
+        Rectangle clip = new Rectangle(photoForFormOfMaterial.getFitWidth(),
+                photoForFormOfMaterial.getFitHeight()
+        );
+        clip.setArcWidth(25);
+        clip.setArcHeight(25);
+
+        photoForFormOfMaterial.setClip(clip);
+
+        highlight_photo.setOnMouseClicked((e) -> {
             if (e.getButton() == MouseButton.SECONDARY && e.getClickCount() == 1) {
                 loadPhotoService.restart();
             }
@@ -3576,7 +3595,7 @@ public final class DarkStyleCatalogFX extends Application {
             }
         });
 
-        photoForFormOfMaterial.setOnDragOver((event) -> {
+        highlight_photo.setOnDragOver((event) -> {
             Dragboard dragboard = event.getDragboard();
             if (dragboard.hasFiles()) {
                 event.acceptTransferModes(TransferMode.ANY);
@@ -3584,11 +3603,12 @@ public final class DarkStyleCatalogFX extends Application {
             event.consume();
         });
 
-        photoForFormOfMaterial.setOnDragDropped((event) -> {
+        highlight_photo.setOnDragDropped((event) -> {
             boolean isCompleted = false;
             Dragboard dragboard = event.getDragboard();
             if (dragboard.hasFiles()) {
                 isCompleted = transferImageFile(dragboard.getFiles());
+                resetPhoto = false;
             }
 
         });
@@ -3663,37 +3683,37 @@ public final class DarkStyleCatalogFX extends Application {
         suggestionsOfAnimes = new JFXAutoCompletePopup<>();
         suggestionsOfAnimes.setPrefWidth(WIDTH_OF_SUGGESTION);
 
-        Platform.runLater(() -> suggestionsOfAnimes.getSuggestions().addAll(CatalogManager.ANIMES));
+        Platform.runLater(() -> suggestionsOfAnimes.getSuggestions().setAll(CatalogManager.ANIMES));
 
         suggestionsOfDonghuas = new JFXAutoCompletePopup<>();
         suggestionsOfDonghuas.setPrefWidth(WIDTH_OF_SUGGESTION);
 
-        Platform.runLater(() -> suggestionsOfDonghuas.getSuggestions().addAll(CatalogManager.DONGHUAS));
+        Platform.runLater(() -> suggestionsOfDonghuas.getSuggestions().setAll(CatalogManager.DONGHUAS));
 
         suggestionsOfLightNovels = new JFXAutoCompletePopup<>();
         suggestionsOfLightNovels.setPrefWidth(WIDTH_OF_SUGGESTION);
 
-        Platform.runLater(() -> suggestionsOfLightNovels.getSuggestions().addAll(CatalogManager.LIGHTNOVELS));
+        Platform.runLater(() -> suggestionsOfLightNovels.getSuggestions().setAll(CatalogManager.LIGHTNOVELS));
 
         suggestionsOfAuthors = new JFXAutoCompletePopup<>();
         suggestionsOfAuthors.setPrefWidth(WIDTH_OF_SUGGESTION);
 
-        Platform.runLater(() -> suggestionsOfAuthors.getSuggestions().addAll(CatalogManager.AUTHORS));
+        Platform.runLater(() -> suggestionsOfAuthors.getSuggestions().setAll(CatalogManager.AUTHORS));
 
         suggestionsOfKinds = new JFXAutoCompletePopup<>();
         suggestionsOfKinds.setPrefWidth(WIDTH_OF_SUGGESTION);
 
-        Platform.runLater(() -> suggestionsOfKinds.getSuggestions().addAll(CatalogManager.KINDS));
+        Platform.runLater(() -> suggestionsOfKinds.getSuggestions().setAll(CatalogManager.KINDS));
 
         suggestionsOfStates = new JFXAutoCompletePopup<>();
         suggestionsOfStates.setPrefWidth(WIDTH_OF_SUGGESTION);
 
-        Platform.runLater(() -> suggestionsOfStates.getSuggestions().addAll(CatalogManager.STATES));
+        Platform.runLater(() -> suggestionsOfStates.getSuggestions().setAll(CatalogManager.STATES));
 
         suggestionsOfStudios = new JFXAutoCompletePopup<>();
         suggestionsOfStudios.setPrefWidth(WIDTH_OF_SUGGESTION);
 
-        Platform.runLater(() -> suggestionsOfStudios.getSuggestions().addAll(CatalogManager.STUDIOS));
+        Platform.runLater(() -> suggestionsOfStudios.getSuggestions().setAll(CatalogManager.STUDIOS));
     }
 
     public void loadPhotoForMaterial() {
@@ -3716,6 +3736,7 @@ public final class DarkStyleCatalogFX extends Application {
             Image pImage = new Image(getAddressPhoto(pathFile));
             photoForFormOfMaterial.setImage(pImage);
             toProcessImagen(pImage, photoForFormOfMaterial);
+            resetPhoto = false;
         }
     }
 
@@ -4362,6 +4383,9 @@ public final class DarkStyleCatalogFX extends Application {
 
     private boolean transferImageFile(List<File> files) {
         for (File file : files) {
+            if (!file.exists()) {
+                return false;
+            }
             String mimeType;
             try {
                 mimeType = Files.probeContentType(file.toPath());

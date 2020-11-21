@@ -41,6 +41,7 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.shape.Rectangle;
 
 import javafx.stage.Stage;
 
@@ -421,6 +422,13 @@ public class SlideShow {
         photo.setFitHeight(HEIGHT_SLIDE);
         title.setText(slider.getTitle());
         footNote.setText(String.format("%s / %s", currentSlide % slides.size() + 1, slides.size()));
+        
+          Rectangle clip = new Rectangle(
+                photo.getFitWidth(), photo.getFitHeight()
+        );
+        clip.setArcWidth(50);
+        clip.setArcHeight(50);
+        photo.setClip(clip);
     }
     
     private void loadEmptySlide() {

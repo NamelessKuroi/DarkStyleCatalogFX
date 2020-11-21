@@ -111,6 +111,11 @@ public class Display {
     ///////////////////////////////////////////////////////////////////
     public final static String INFO_NOT_AVAILABLE = "N / A";
 
+    public final static byte TAB_FOR_ANIME = 0;
+    public final static byte TAB_FOR_DONGHUA = 1;
+    public final static byte TAB_FOR_LIGHTNOVEL = 2;
+
+    
     public final static String ANY = "Any";
     public final static String ALL = "All";
 
@@ -141,8 +146,8 @@ public class Display {
     private final static boolean PRESERVE_RATION = false;
     private final static boolean SMOOTH = true;
 
-    private final static int HORIZONTAL_CELL_SPACING = 30 * 2;
-    private final static int WIDTH_GRIDCELL = 200;
+    private final static int HORIZONTAL_CELL_SPACING = 25 * 2;
+    private final static int WIDTH_GRIDCELL = 210;
 
     private static final int WIDTH_CELL = WIDTH_GRIDCELL + HORIZONTAL_CELL_SPACING;
     private static final int DELAY_BETWEEN_GRIDCELL = 300;
@@ -219,7 +224,6 @@ public class Display {
         } else if (photo.isError()) {
             view.setImage(NOT_PHOTO);
         }
-
     }
 
     public static String getAddressPhoto(String FilePhoto) {
