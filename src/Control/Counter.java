@@ -106,9 +106,10 @@ public final class Counter extends HBox {
         });
 
         increment.setOnMouseClicked((event) -> {
-            if(editor.getText().isEmpty())
+            if (editor.getText().isEmpty()) {
                 return;
-           
+            }
+
             if (event.getButton() == MouseButton.PRIMARY) {
                 value = Integer.parseInt(editor.getText());
                 if (value < maximun_value) {
@@ -120,9 +121,10 @@ public final class Counter extends HBox {
         });
 
         decrement.setOnMouseClicked((event) -> {
-            if(editor.getText().isEmpty())
+            if (editor.getText().isEmpty()) {
                 return;
-           
+            }
+
             if (event.getButton() == MouseButton.PRIMARY) {
                 value = Integer.parseInt(editor.getText());
                 if (value > minimun_value) {
@@ -133,10 +135,10 @@ public final class Counter extends HBox {
             }
             event.consume();
         });
-
-        this.getChildren().add(decrement);
-        this.getChildren().add(editor);
+        
         this.getChildren().add(increment);
+        this.getChildren().add(editor);
+        this.getChildren().add(decrement);
 
     }
 

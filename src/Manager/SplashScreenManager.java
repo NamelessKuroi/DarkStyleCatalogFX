@@ -41,43 +41,42 @@ public class SplashScreenManager {
 
     public final static int RANDOM = 0;
     public final static int SEQUENTIAL = 1;
+    public final static int FIXED = 2;
 
     private static int QuantityOfPhotos = 0;
 
     public static int ModeSplash() {
         Configuration currentConfiguration = ConfigurationManager.getConfiguration("ModeSplash");
 
-        String modeSplash;
+        String modeSplash = "Random";
         if (currentConfiguration == null) {
-            modeSplash = "Random";
-            ConfigurationManager.saveConfiguration("ModeSplash", "Random");
+            ConfigurationManager.saveConfiguration("ModeSplash", modeSplash);
         } else {
             modeSplash = currentConfiguration.getValue();
         }
 
         switch (modeSplash) {
-            case "Random":
-                return RANDOM;
             case "Sequential":
                 return SEQUENTIAL;
+            case "Fixed":
+                return FIXED;
+            default:
+                return RANDOM;
         }
-        return RANDOM;
     }
 
-    public static Image changeModeSplash(int modeSplash) {
+    public static void changeModeSplash(int modeSplash) {
         switch (modeSplash) {
             case RANDOM:
                 ConfigurationManager.saveConfiguration("ModeSplash", "Random");
                 break;
             case SEQUENTIAL:
                 ConfigurationManager.saveConfiguration("ModeSplash", "Sequential");
-                resetCurrentSplash();
                 break;
-            default:
-                return Display.NOT_PHOTO;
-
+            case FIXED:
+                ConfigurationManager.saveConfiguration("ModeSplash", "Fixed");
+                break;
         }
-        return null;
     }
 
     private static String[] getFileSplash() {
@@ -102,7 +101,7 @@ public class SplashScreenManager {
 
     }
 
-    private static Image nextSplash() {
+    private static Image currentSplash() {
 
         int currentSplash;
 
@@ -131,9 +130,9 @@ public class SplashScreenManager {
         switch (modeSplash) {
             case "Random":
                 return randomSplash();
-            case "Sequential": {
-                return nextSplash();
-            }
+            case "Sequential":
+            case "Fixed":
+                return currentSplash();
             default:
                 return Display.NOT_PHOTO;
         }
@@ -185,7 +184,7 @@ public class SplashScreenManager {
     }
 
     private static int quantity() {
-        String [] splashImages = getFileSplash();
+        String[] splashImages = getFileSplash();
         if (splashImages == null) {
             return 0;
         }
@@ -193,31 +192,39 @@ public class SplashScreenManager {
     }
 
     private static void resetCurrentSplash() {
-        ConfigurationManager.saveConfiguration("CurrentSplash", "" + 0);
+        ConfigurationManager.saveConfiguration("CurrentSplash", String.valueOf(0));
     }
 
     public static void forward() {
-        Configuration currentConfiguration = ConfigurationManager.getConfiguration("ModeSplash");
+        int modelSplash = ModeSplash();
+        if (quantity() == 0
+                || modelSplash == RANDOM
+                || modelSplash == FIXED) {
+            return;
+        }
 
+        Configuration currentConfiguration = ConfigurationManager.getConfiguration("CurrentSplash");
         if (currentConfiguration == null) {
-            return;
-        }
-        if (!currentConfiguration.getValue().equalsIgnoreCase("Sequential")) {
-            return;
-        }
-        if (quantity() == 0) {
-            return;
-        }
-
-        currentConfiguration = ConfigurationManager.getConfiguration("CurrentSplash");
-
-        if (currentConfiguration == null) {
-            ConfigurationManager.saveConfiguration("CurrentSplash", "" + 1);
+            ConfigurationManager.saveConfiguration("CurrentSplash", String.valueOf(1));
         } else {
             int currentSplash = Integer.parseInt(currentConfiguration.getValue());
-            ConfigurationManager.saveConfiguration("CurrentSplash", "" + (currentSplash % quantity() + 1));
+            ConfigurationManager.saveConfiguration("CurrentSplash", String.valueOf(currentSplash % quantity() + 1));
         }
 
     }
 
+    public static int getCurrentSplash() {
+        Configuration currentConfiguration = ConfigurationManager.getConfiguration("CurrentSplash");
+
+        if (currentConfiguration == null) {
+            return 0;
+        } else {
+            int currentSplash = Integer.parseInt(currentConfiguration.getValue());
+            return currentSplash;
+        }
+    }
+
+    public static void setCurrentSplash(int currentSplash) {
+        ConfigurationManager.saveConfiguration("CurrentSplash", String.valueOf(currentSplash));
+    }
 }

@@ -56,16 +56,17 @@ public class DarkStyleCatalogSQL {
 
         File fileDB = new File(currentDir + File.separatorChar + PATH_DATABASE);
 
-        if (!dirPhoto.exists()) {
-            dirPhoto.mkdir();
-        }
-        if (!dirSplah.exists()) {
-            dirSplah.mkdir();
-        }
-
         if (!fileDB.exists()) {
             dirDB.mkdir();
             makeDataBase();
+        }
+
+        if (!dirPhoto.exists()) {
+            dirPhoto.mkdir();
+        }
+        
+        if (!dirSplah.exists()) {
+            dirSplah.mkdir();
         }
 
     }
@@ -647,7 +648,7 @@ public class DarkStyleCatalogSQL {
             preparedStatement.setDouble(7, newAnime.getRating());
 
             preparedStatement.executeUpdate();
-       
+
         } catch (ClassNotFoundException | SQLException e) {
             System.out.println(e);
             System.out.println(e);

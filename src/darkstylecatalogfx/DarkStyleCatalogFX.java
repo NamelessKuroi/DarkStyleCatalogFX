@@ -339,8 +339,8 @@ public final class DarkStyleCatalogFX extends Application {
     private JFXToggleButton toggleOfFilterByEmptyField = null;
 
     private FontAwesomeIconView iconLock = null;
-    private FontAwesomeIconView iconConfiguration = null;
 
+    private FontAwesomeIconView iconConfiguration = null;
     private FontAwesomeIconView iconSplash = null;
     private FontAwesomeIconView iconHelp = null;
     private FontAwesomeIconView iconLoosePhoto = null;
@@ -349,7 +349,7 @@ public final class DarkStyleCatalogFX extends Application {
     private JFXButton buttonHelp = null;
     private JFXButton buttonLoosePhoto = null;
 
-    private FlowPane configurationLayout = null;
+    private FlowPane managerUserLayout = null;
 
     private SlideShow slideShowMaterials = null;
     private SlideShow slideShowSplash = null;
@@ -659,15 +659,19 @@ public final class DarkStyleCatalogFX extends Application {
 
     }
 
+    public void initializeSlideShow() {
+
+        slideShowMaterials = new SlideShow(mainPane);
+        slideShowSplash = new SlideShow(mainPane, currentStage);
+        slideShowLoosePhotos = new SlideShow(mainPane, currentStage);
+        slideShowMaterials.disableEdditable(SlideShow.DELETE_MODELSPLASH | SlideShow.DELETE_ADD | SlideShow.DELETE_TRASH);
+        slideShowLoosePhotos.disableEdditable(SlideShow.DELETE_MODELSPLASH | SlideShow.DELETE_ADD);
+    }
+
     @Override
     public void start(Stage primaryStage) {
         currentStage = primaryStage;
-        slideShowMaterials = new SlideShow(mainPane);
-        slideShowSplash = new SlideShow(mainPane, primaryStage);
-        slideShowLoosePhotos = new SlideShow(mainPane, primaryStage);
-        slideShowMaterials.disableEdditable(SlideShow.DELETE_RANDOM | SlideShow.DELETE_ADD | SlideShow.DELETE_TRASH);
-        slideShowLoosePhotos.disableEdditable(SlideShow.DELETE_RANDOM | SlideShow.DELETE_ADD);
-
+        initializeSlideShow();
         sceneGallery = new Scene(mainPane, WIDTH_SCREEN, HEIGHT_SCREEN);
 
         sceneGallery.getStylesheets().add(STYLESHEET);
@@ -714,7 +718,6 @@ public final class DarkStyleCatalogFX extends Application {
                     Platform.runLater(()
                             -> {
                         if (!dialogSearchedHide) {
-                            System.out.println(materialToSearch.getText());
                             loadSearchMateriales(materialToSearch.getText());
                         }
                     });
@@ -1110,20 +1113,23 @@ public final class DarkStyleCatalogFX extends Application {
                 .forEach(t -> t.getStyleClass().add(BUTTON_CONFIGURATION));
 
         iconConfiguration.getStyleClass().add(ICON_NORMAL);
-        configurationLayout = new FlowPane(buttonSplash, buttonLoosePhoto);
-        configurationLayout.setAlignment(Pos.CENTER);
-        configurationLayout.setHgap(25);
-        configurationLayout.setVgap(5);
+        managerUserLayout = new FlowPane(buttonSplash, buttonLoosePhoto);
+        managerUserLayout.setAlignment(Pos.CENTER);
+        managerUserLayout.setHgap(25);
+        managerUserLayout.setVgap(5);
 
         buttonSplash.setOnMouseClicked((event)
                 -> {
-            slideShowSplash.setCurrentSlide(0);
+            dialogConfiguration.close();
+            slideShowSplash.setCurrentSlide(SplashScreenManager.getCurrentSplash());
             slideShowSplash.setSlides(SplashScreenManager.createModelSlideSplash());
             slideShowSplash.showSlides();
+
         });
 
         buttonLoosePhoto.setOnMouseClicked((event)
                 -> {
+            dialogConfiguration.close();
             slideShowLoosePhotos.setSlides(createLoosePhotoSlides());
             slideShowLoosePhotos.showSlides();
         });
@@ -1132,7 +1138,7 @@ public final class DarkStyleCatalogFX extends Application {
         title.getStyleClass().addAll(HEADING_BIG, DIALOG_SMALL);
 
         contentConfiguration.setHeading(createHeadingForDialogRotateOut(title, dialogConfiguration));
-        contentConfiguration.setBody(configurationLayout);
+        contentConfiguration.setBody(managerUserLayout);
 
     }
 
@@ -1485,7 +1491,6 @@ public final class DarkStyleCatalogFX extends Application {
         contentFormAnime.setActions(buttonActions);
 
         if (animeToEdit != null) {
-            System.out.println("Edit Anime:" + animeToEdit.getIdMaterial());
             title.setText(animeToEdit.getTitle());
             synopsisForFormOfMaterial.setText(animeToEdit.getSynopsis());
             counterForFormOfMaterial.setValue(animeToEdit.getChapter());
@@ -2538,7 +2543,7 @@ public final class DarkStyleCatalogFX extends Application {
                 } else {
                     setText(null);
 
-                    JFXCheckBox name = new JFXCheckBox((getIndex() + 1) + "-" + item.getName());
+                    JFXCheckBox name = new JFXCheckBox(item.getName());
                     if (!item.getDescription().isEmpty()) {
                         name.getStyleClass().add("check-indicator");
                     }
@@ -3009,6 +3014,7 @@ public final class DarkStyleCatalogFX extends Application {
                         setText(null);
                         setGraphic(null);
                     } else {
+                        setTooltip(new Tooltip(item.getTitle()));
                         setText(null);
                         setGraphic(createGridCellForMaterial(item, this, visibleMaterialType));
                         setOpacity(HIDDEN);
@@ -3224,7 +3230,6 @@ public final class DarkStyleCatalogFX extends Application {
         GridView<Material> view = cell.getGridView();
 
         Label title = new Label(item.getTitle());
-
         StarRating rating = new StarRating(5);
         rating.setMouseTransparent(UNTOUCHABLE);
         rating.setRating((int) item.getRating());
@@ -4406,8 +4411,8 @@ public final class DarkStyleCatalogFX extends Application {
         try {
             photoForFormOfMaterial.setImage(new Image(imageUrl));
             return true;
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
+        } catch (Exception ex) {
+            System.out.println(ex);
         }
         return false;
     }

@@ -8,6 +8,11 @@ and open the template in the editor.
     Author     : Nameless
 */
 
+@font-face {
+    font-family: "Harrington";
+    src: url("/Resource/harrington.TTF");
+}
+
 *{
     -base-color:#4285F4;
     -base-color-opacity:rgba(66,133,244,.33);
@@ -70,7 +75,7 @@ and open the template in the editor.
     -fx-font-family:'Century Gothic';
     -fx-font-weight:bold;
     -fx-font-size: 13px;
-    
+
     -fx-border-color:-base-color;
     -fx-background-radius: 10px;
     -fx-border-radius: 10px;
@@ -458,7 +463,7 @@ and open the template in the editor.
 
 
 .jfx-tab-pane .headers-region .tab .tab-container .tab-label {
-    -fx-text-fill: -text-color-highlight;
+    -fx-text-fill: -base-color-deactivate;
     -fx-content-display: text-only;
     -fx-graphic-text-gap: 10;
 
@@ -595,7 +600,7 @@ and open the template in the editor.
     -fx-font-weight:bold;  
 }
 .jfx-button > .text{
-       -fx-effect:  dropshadow(three-pass-box, black, 2, 0.65, 1, 1);
+    -fx-effect:  dropshadow(three-pass-box, black, 2, 0.65, 1, 1);
 }
 
 .button-configuration.jfx-button{
@@ -605,9 +610,6 @@ and open the template in the editor.
 
     -fx-pref-height:150;
     -fx-pref-width:150; 
-
-
-
 }
 
 .button-sidebar.jfx-button{
@@ -914,7 +916,7 @@ and open the template in the editor.
 /*                        Pop Over                     */
 /*///////////////////////////////////////////////////////*/
 .popover{
-     -fx-background-color: transparent;   
+    -fx-background-color: transparent;   
 }
 /*///////////////////////////////////////////////////////*/
 /*                         Pop Over                     */
@@ -1079,11 +1081,11 @@ and open the template in the editor.
 }
 
 .icon-slideshow{
-    -fx-fill: derive(-color-button , -15%);
+    -fx-fill:-base-color-deactivate;
 }
 
 .icon-slideshow:hover{
-    -fx-fill: derive(-color-button , 15%); 
+    -fx-fill: -base-color; 
 }
 
 .search-icon{
@@ -1097,8 +1099,6 @@ and open the template in the editor.
 .icon-without-filter{
     -fx-fill:-base-color-deactivate;
 }
-
-
 
 /*///////////////////////////////////////////////////////*/
 /*                        Icon Star                      */

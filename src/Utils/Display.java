@@ -37,6 +37,7 @@ public class Display {
     //                        STYLESHEET                              //
     ///////////////////////////////////////////////////////////////////
     public static final String MODE_CARD = "mode-card";
+    
     public static final String MODE_TEXT = "mode-text";
     public static final String MODE_CHECK = "mode-check";
     public static final String MODE_CHECK_LARGE = "mode-check-large";
